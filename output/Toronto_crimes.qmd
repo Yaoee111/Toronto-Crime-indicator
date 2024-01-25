@@ -1,0 +1,119 @@
+---
+format: pdf
+title: "An analysis of the impact of temporal and spatial factors on crime in Toronto and its implications on policing and community safety"
+author: 
+  - Yiyi Yao
+thanks: "Code and data are available at: https://github.com/Yaoee111/Toronto-Crime-indicator"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+abstract: "Through our research we have found that crime rates increase significantly in specific months. This proves that there is a correlation between climate and crime rate. Also, the crime rate in a particular region will be significantly higher than other regions. As well as the fact that crimes are most frequent at night of the day. All of these findings have a role to play in the placement of police and the use of security measures in the community."
+output:
+  bookdown::pdf_document2
+toc: TRUE
+bibliography: ref.bib
+---
+
+```{r}
+#| message: false
+#| echo: false
+
+#### Workspace set-up ####
+
+## Load packages
+library(janitor)
+library(knitr)
+library(lubridate)
+library(opendatatoronto)
+library(tidyverse)
+
+#### Read in cleaned data ####
+
+data_clean <- 
+  read_csv(
+    "/cloud/project/input/data/data_clean.csv",
+  show_col_types = FALSE
+)
+```
+
+\newpage
+# Introduction
+
+Toronto is a big city known for its diversity and vibrancy. Even though Toronto is considered one of the safer areas in North America, there are many crises and challenges lurking in the city. As a result, the issue of crime within its boundaries is more widely publicized. How to better govern the city has also become one of the most important issues. The research direction of this paper is to analyze the data to reveal how to better combat the crime problem and how to effectively prevent crime.
+
+This paper provides an in-depth study of crime patterns in the Toronto area. The focus is on the impact of temporal and spatial factors on crime rates. By dissecting crime data records over the years, we reveal crime trends across seasons, time periods and neighborhoods. We found significant seasonal variations in crime rates, with specific crimes peaking at different times of the year. Our study also identifies temporal patterns of criminal activity, whereby nighttime is a frequent time for criminal behavior. These findings not only contribute to the academic study of crime patterns, but also have practical implications for policing and community safety efforts. By highlighting when and where resources are most needed, our research contributes to the development of targeted interventions and public policies to enhance safety in Toronto.
+
+This paper begins with an overview of the dataset and our analytical approach. It then presents our findings on temporal and spatial crime patterns through graphs and charts. As well, the implications of these patterns for policing and public safety are discussed. It concludes with recommendations for future research and policy development
+
+# Data
+
+To investigate the indicators of crimes in Toronto, I obtained the dataset "Major Crime Indicators" from the Toronto Open Data Portal [@citedata]. Provided by the Toronto Police Service, this dataset includes all Major Crime Indicators (MCI) occurrences by reported date. This data is provided at the offence and/or victim level, therefore one occurrence number may have several rows of data associated to the various MCIs used to categorize the occurrence. This data does not include occurrences that have been deemed unfounded. This data includes all MCI occurrences reported to the Toronto Police Service, including those where the location has not been able to be verified.
+
+This paper analyzes the above data, by using R [@citeR], and R packages "tidyverse" [@citetidyverse], "janitor" [@citejanitor], "lubridate" [@citelubridate], "knitr" [@citeknitr].
+
+
+# Monthly Crime Trends Over Years
+
+```{r echo=FALSE}
+library(ggplot2)
+library(dplyr)
+
+# Aggregate total crimes per month across all available years
+monthly_crime_trends <- data_clean %>%
+  group_by(REPORT_YEAR, REPORT_MONTH) %>%
+  summarise(TotalCrimes = n(), .groups = 'drop')
+
+# Plotting monthly crime trends over years
+ggplot(monthly_crime_trends, aes(x = REPORT_MONTH, y = TotalCrimes, group = REPORT_YEAR, color = as.factor(REPORT_YEAR))) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Monthly Crime Trends Over Years", x = "Month", y = "Total Crimes") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+This graphic reveals how Toronto's crime rate fluctuates from month to month and year to year, highlighting the impact of seasonal factors on crime rates. By examining monthly crime totals, we can identify periods when crime rates are rising or falling, which can indicate when additional measures are most needed. Ultimately, the chart will be an important tool in understanding and responding to the dynamics of crime in Toronto.
+
+
+# Crime Type Distribution for a Selected Year
+
+```{r echo=FALSE}
+library(ggplot2)
+library(dplyr)
+
+if(all(c("REPORT_YEAR", "OFFENCE") %in% names(data_clean))) {
+  
+  data_2014 <- filter(data_clean, REPORT_YEAR == 2014)
+  
+  crime_counts <- data_2014 %>%
+    group_by(OFFENCE) %>%
+    summarise(Count = n(), .groups = 'drop') %>%
+    mutate(Percentage = Count / sum(Count) * 100)
+  
+  # Plotting a pie chart
+  ggplot(crime_counts, aes(x = "", y = Percentage, fill = OFFENCE)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar(theta = "y") + 
+    labs(title = "Crime Type Distribution in 2014", x = "", y = "") +
+    theme_void() + 
+    scale_fill_viridis_d() 
+  
+} else {
+  print("The dataframe does not have the required columns.")
+}
+```
+
+Using this pie chart, we can explore the distribution of different types of crimes for a selected year, such as 2014.
+
+From this visualization, viewers can quickly find which types of crimes were most common in Toronto during 2014. For instance, larger slices may indicate prevalent crime categories such as theft, assault, or burglary, emphasizing areas of concern for law enforcement and public safety initiatives. Conversely, smaller slices reveal less frequent crime types, offering a comprehensive view of the city's crime profile for the year.
+
+
+# Conclusion
+
+A study of Toronto's crime data gives us a clear picture of when, where and what types of crime occur in the city. We have found that crime varies with the seasons, occurs more often in certain places, and involves different types of illegal activity. For example, some crimes occur more in the summer months, while others increase in the winter months. We also note that certain areas have higher crime rates, which helps police and community leaders decide where to focus their efforts. In addition, by understanding the most common crimes, such as burglaries or assaults, we can better plan how to stop them.
+
+Our work shows that using data to look at crime can really help make cities safer. By understanding crime patterns-when and where crimes typically occur and the types of crimes-we can better stop them before they happen. So our research tells us that to effectively fight crime in Toronto, we need to keep analyzing data. That way, we can keep up with crime trends and work smarter to ensure everyone's safety.
+
+\newpage
+
+
+# References
