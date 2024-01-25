@@ -5,3 +5,4 @@ Overview: This paper analyzes crime patterns in Toronto, using a dataset spannin
 input: toronto crime data; cleaned data
 output: crime_indicator.qmd; crime_indicator.pdf; references
 script: simulation; download data; data clean 
+
