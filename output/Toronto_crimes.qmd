@@ -115,5 +115,4 @@ Our work shows that using data to look at crime can really help make cities safe
 
 \newpage
 
-
 # References
