@@ -1,4 +1,4 @@
-# Toronto-Crime-indicator
+# Toronto-Crime-indicators
 
 Overview: This paper analyzes crime patterns in Toronto, using a dataset spanning several years to explore the multifaceted nature of urban crime. By data cleaning, processing, and graphing, we examine seasonal fluctuations, geographic distribution, and hourly trends in crime incidents. Guidance was provided for urban policing planning.
 
